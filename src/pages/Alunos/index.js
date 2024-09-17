@@ -6,7 +6,6 @@ import { FiUserX, FiXCircle, FiEdit } from "react-icons/fi";
 import api from '../../services/api';
 
 export default function Alunos() {
-
     const [nome, setNome] = useState('');
     const [alunos, setAlunos] = useState([]);
 
@@ -21,28 +20,31 @@ export default function Alunos() {
         }
     }
 
-
-
     useEffect(() => {
-        api.get('api/alunos', authorization).then(
+        api.get('/api/alunos', authorization).then(
             response => {
                 setAlunos(response.data);
             }
         ).catch(error => {
+            alert('Erro ao buscar alunos, tente novamente mais tarde.');
             console.error('Erro ao buscar alunos:', error);
         });
-    }, [token]); // Adicionei o array de dependências com o token
+    }, [token]); // Dependência com o token
 
-
-    async function logout(){
-        try{
+    async function logout() {
+        try {
             localStorage.clear();
-            localStorage.setItem("token", '');
-            authorization.headers = '';
             navigate('/');
-        }
-        catch(err){
+        } catch (err) {
             alert('Não foi possível fazer o logout ' + err);
+        }
+    }
+
+    function editAluno(id) {
+        try {
+            navigate(`/aluno/novo/${id}`);
+        } catch (error) {
+            alert('Não foi possível editar o aluno');
         }
     }
 
@@ -58,8 +60,13 @@ export default function Alunos() {
                 </button>
             </header>
             <form>
-                <input type='text' placeholder='Nome' />
-                <button type="button" class='button'>
+                <input 
+                    type='text' 
+                    placeholder='Nome' 
+                    value={nome}
+                    onChange={e => setNome(e.target.value)}
+                />
+                <button type="submit" className="button">
                     Filtrar aluno por nome (parcial)
                 </button>
             </form>
@@ -70,7 +77,7 @@ export default function Alunos() {
                         <b>Nome:</b>{aluno.nome}<br /><br />
                         <b>Email:</b>{aluno.email}<br /><br />
                         <b>Idade:</b>{aluno.idade}<br /><br />
-                        <button type="button">
+                        <button onClick={() => editAluno(aluno.id)} type="button">
                             <FiEdit size="25" color="#17202a" />
                         </button>
 
